@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Node","Node contains data for describing a cardano node configuration:"]]});
