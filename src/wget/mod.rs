@@ -15,7 +15,6 @@ pub fn testnet_topology_all_peers() -> Vec<u8> {
 }
 
 pub fn wget_cardano_file(url: &str) -> Vec<u8> {
-    // Write the contents of rust-lang.org to stdout
     let mut buf = Vec::new();
     let mut handle = Easy::new();
 

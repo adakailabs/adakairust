@@ -2,9 +2,6 @@ use std::error::Error;
 
 use serde::{Deserialize, Serialize};
 
-///
-pub mod types;
-
 /// AdakaiResult is a generic result type
 pub type AdakaiResult<T> = Result<T, Box<dyn Error>>;
 

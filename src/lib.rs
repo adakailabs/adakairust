@@ -30,10 +30,14 @@ pub mod ping;
 /// (refer to module documentation for all features description)
 pub mod node;
 
-/// types moduls holds multiple helper types related to all of the adakairust crate functionality
+/// types module holds multiple helper types related to all of the adakairust crate functionality
 pub mod types;
-mod topology;
-mod wget;
+
+/// topology module holds methods for creating and manimulating a cardano network topology
+pub mod topology;
+
+/// wget modules holds methods for downloading configuration related files for a cardano node
+pub mod wget;
 
 
 #[cfg(test)]

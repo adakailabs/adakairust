@@ -284,8 +284,13 @@ async fn call_ping(host: String, port: u16, network_magic: u32) -> (Duration, Du
 ///
 /// # Example:
 /// ```
-/// use crate::ping;
-/// let (conn_duration, total_duration, is_error, error) = ping(name, port, NetworkType::TestNet); //fixme
+/// use crate::adakairust::ping::{ping};
+/// use crate::adakairust::types::{NetworkType};
+/// let name = "costa-rica.adakailabs.com".to_string();
+/// let port = 5002;
+///
+/// let (conn_duration, total_duration, is_error, error) =
+/// self::adakairust::ping::ping(name, port, self::adakairust::types::NetworkType::TestNet);
 /// ```
 pub fn ping(host: String, port: u16, net_type: NetworkType) -> (Duration, Duration, bool, String) {
     debug!("ping node: {}:{}", host,port);
