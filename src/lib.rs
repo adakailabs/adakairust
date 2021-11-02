@@ -32,6 +32,8 @@ pub mod node;
 
 /// types moduls holds multiple helper types related to all of the adakairust crate functionality
 pub mod types;
+mod topology;
+mod wget;
 
 
 #[cfg(test)]

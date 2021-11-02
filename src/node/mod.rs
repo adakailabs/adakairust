@@ -112,7 +112,7 @@ impl Node {
 
     /// set_node_type:: sets type of node, (RELAY or PRODUCER)
     #[allow(dead_code)]
-    pub fn set_node_type(&mut self, ntype: NetworkType) {
+    pub fn set_network_type(&mut self, ntype: NetworkType) {
         self.network_type = ntype;
     }
 

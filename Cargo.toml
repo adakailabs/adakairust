@@ -12,7 +12,7 @@ serde = { version = "1.0.117", features = ["derive"] }
 serde-aux = "2.1.1"
 serde_cbor = "0.11.1"
 serde_json = "1.0.62"
-
+curl = "0.4.39"
 # logging
 log = { version = "0.4.11", features = ["max_level_debug", "release_max_level_warn"] }
 env_logger = "0.8.1"
