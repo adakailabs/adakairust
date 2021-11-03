@@ -3,24 +3,14 @@
 
 #[cfg(test)]
 mod tests {
-    use std::{env, thread, time};
-    //use test_env_log::test;
-        use std::sync::Once;
+    use std::{thread, time};
 
     use crate::node::Node;
     use crate::ping::{MessageIn, ping, ping_vec, Pinger};
+    use crate::test::test_initialize;
     use crate::types::NetworkType;
 
     extern crate pretty_env_logger;
-
-    static INIT: Once = Once::new();
-
-    pub fn initialize() {
-        INIT.call_once(|| {
-            env::set_var("RUST_LOG", "debug");
-            pretty_env_logger::init();
-        });
-    }
 
     const JSON_TESTNET_NODE_TEST_BAD_0: &str = r#"
     {
@@ -50,7 +40,7 @@ mod tests {
 
     #[test]
     fn test_ping_node_bad_0() {
-        initialize();
+        test_initialize();
         let node = Node::new_from_json(NetworkType::Mainnet, JSON_TESTNET_NODE_TEST_BAD_0.to_string()).unwrap();
         let host = node.addr().to_string();
         let port = node.port();
@@ -65,8 +55,8 @@ mod tests {
 
     #[test]
     fn test_ping_node_good_0() {
-        initialize();
-        let node = Node::new_from_json(NetworkType::Mainnet, JSON_TESTNET_NODE_TEST_GOOD_0.to_string()).unwrap();
+        test_initialize();
+        let mut node = Node::new_from_json(NetworkType::Mainnet, JSON_TESTNET_NODE_TEST_GOOD_0.to_string()).unwrap();
         let host = node.addr().to_string();
         let port = node.port();
 
@@ -80,11 +70,17 @@ mod tests {
         if is_error  {
             panic!("error: {}", the_error)
         }
+
+        node.resolve_valency();
+
+        info!("valency: {}", node.valency());
+
+
     }
 
     #[test]
     fn test_ping_node_good_1() {
-
+        test_initialize();
         let node = Node::new_from_json(NetworkType::Mainnet, JSON_TESTNET_NODE_TEST_GOOD_1.to_string()).unwrap();
 
         let host = node.addr().to_string();
@@ -113,7 +109,7 @@ mod tests {
                 .send(MessageIn::Node {
                     name: "adakai".to_string(),
                     port: 2,
-                    network_magic: 0,
+                    network_magic: NetworkType::TestNet,
                     id:0
                 })
                 .unwrap();
@@ -128,7 +124,7 @@ mod tests {
 
     #[test]
     fn ping_vector() {
-        initialize();
+        test_initialize();
         const VEC_SIZE: usize= 20;
         let mut node_vec = Vec::new();
 
@@ -157,7 +153,7 @@ mod tests {
 
     #[test]
     fn ping_vector_with_error() {
-        initialize();
+        test_initialize();
         const VEC_SIZE: usize= 20;
         let mut node_vec = Vec::new();
 

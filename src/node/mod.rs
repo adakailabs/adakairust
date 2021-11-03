@@ -1,7 +1,9 @@
 use std::time::Duration;
 
+use dns_lookup::lookup_host;
 use serde::{Deserialize, Serialize};
 
+use crate::ping;
 use crate::types::{AdakaiResult, NetworkType, NodeType};
 
 ///
@@ -18,7 +20,7 @@ mod node_tests;
 /// * connection latency
 /// * round trip latency
 /// * node type (testnet or mainnet, potencially others)
-#[derive(Serialize, Deserialize, Default, Debug, Clone)]
+#[derive(Serialize, Deserialize, Default, Debug, Clone,Eq, Ord, PartialEq, PartialOrd)]
 pub struct Node {
     addr: String,
     port: u16,
@@ -185,6 +187,46 @@ impl Node {
     pub fn node_type(&self) -> NodeType {
         self.node_type
     }
+
+    /// **node_ping**: internally calls the ping function from the adakairust::ping module.  It sets
+    /// the private elements conn_latency and total_latency, online & online error, that can later
+    /// be retrieved using the respective methods in this interface.  If you need to ping multiple
+    /// nodes consider using the adakairust::pinv_vec function directly as it offers much better performance
+    /// for pinging multiple nodes concurrently, or use the ping_topology method offered by adakairust::topology
+    pub fn node_ping(&mut self) {
+        let (conn_duration, total_duration, is_error, error) =
+            ping::ping(self.addr().to_string(), self.port(), self.network_type());
+        self.set_con_latency(conn_duration);
+        self.set_total_latency(total_duration);
+        self.set_online(!is_error);
+        self.set_online_error(error);
+    }
+
+    pub fn resolve_valency(&mut self) {
+        let mut valency_count = 0;
+
+        if ipaddress::IPAddress::is_valid(&*self.addr) {
+            self.set_valency(1);
+            return;
+        }
+
+        let hostname = &*self.addr;
+        let ips_result = lookup_host(hostname);
+        match ips_result {
+            Ok(resolved_addresses) => {
+                for addr in resolved_addresses {
+                    debug!("found address: {}", addr);
+                    valency_count += 1;
+                }
+            }
+            Err(_) => {
+                valency_count = 0
+            }
+        }
+        self.set_valency(valency_count);
+
+    }
+
 
     /// new_from_json:  takes a json encoded string and deserializes it into a Node struct.
     /// # Arguments:

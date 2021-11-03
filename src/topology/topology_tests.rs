@@ -1,15 +1,16 @@
 #[cfg(test)]
 mod tests {
-    use crate::topology::{Node, Topology, TopologyResult};
+    use crate::test::test_initialize;
+    use crate::topology::{Topology, TopologyResult};
     use crate::types::NetworkType;
 
-    const JSON_NODE_TEST: &str = r#"
-        {
-      "addr": "54.220.20.40",
-      "port": 3002,
-      "continent": "Europe",
-      "state": "IE"
-    }"#;
+// const JSON_NODE_TEST: &str = r#"
+    //     {
+    //   "addr": "54.220.20.40",
+    //   "port": 3002,
+    //   "continent": "Europe",
+    //   "state": "IE"
+    // }"#;
 
     const JSON_TOPOLOGY_TEST: &str = r#"
 {
@@ -36,11 +37,15 @@ mod tests {
 
     #[test]
     fn basic_parse_json() {
+        test_initialize();
         let top_result: TopologyResult<Topology> =
             Topology::new_from_json(NetworkType::Mainnet, JSON_TOPOLOGY_TEST.to_string());
 
         match top_result {
-            Ok(topology) => {
+            Ok(mut topology) => {
+
+                topology.ping();
+
                 assert_eq!("54.220.20.40", topology.producers()[0].addr());
 
                 let net = topology.producers()[0].network_type();
@@ -51,7 +56,10 @@ mod tests {
                     }
                 }
 
-                println!("valency: {}", topology.producers()[0].valency())
+                println!("valency: {}", topology.producers()[0].valency());
+
+                topology.pretty_print();
+
             }
             Err(e) => {
                 panic!("error not expected {} ", e)
@@ -60,11 +68,39 @@ mod tests {
     }
 
     #[test]
-    fn basic_all_peers() {
+    fn basic_all_peers_testnet() {
+        test_initialize();
+        let top_result: TopologyResult<Topology> = Topology::new_from_online_peers(NetworkType::TestNet);
+
+        match top_result {
+            Ok(mut topology) => {
+                topology.resolve_valencies();
+                topology.ping();
+                topology.sort();
+                topology.pretty_print();
+            }
+            Err(_) => {
+                panic!("test failed")
+            }
+        }
+    }
+
+    #[test]
+    fn basic_all_peers_mainnet() {
+        test_initialize();
         let top_result: TopologyResult<Topology> = Topology::new_from_online_peers(NetworkType::Mainnet);
 
-        let the_len = top_result.unwrap().producers().len();
-
-        println!("len: {} ", the_len)
+        match top_result {
+            Ok(mut topology) => {
+                topology.resolve_valencies();
+                topology.ping();
+                topology.sort();
+                topology.pretty_print();
+            }
+            Err(_) => {
+                panic!("test failed")
+            }
+        }
     }
+
 }

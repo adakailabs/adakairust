@@ -10,13 +10,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b8f5a889-1754-479f-a634-853123c8244d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/ping/pinger.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/node/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/node/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/node/node_tests.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/node/node_tests.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ping/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ping/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ping/ping_tests.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ping/ping_tests.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/topology/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/topology/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/topology/topology_tests.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/topology/topology_tests.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/types/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/types.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/wget/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/wget/mod.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,7 +77,7 @@
       <recent name="$PROJECT_DIR$/src/types" />
     </key>
   </component>
-  <component name="RunManager" selected="Cargo.All Tests">
+  <component name="RunManager" selected="Cargo.Test topology::topology_tests::tests::basic_all_peers">
     <configuration name="All Tests" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="command" value="test" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
@@ -93,6 +98,24 @@
     </configuration>
     <configuration name="Doc" type="CargoCommandRunConfiguration" factoryName="Cargo Command" nameIsGenerated="true">
       <option name="command" value="doc" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <option name="channel" value="DEFAULT" />
+      <option name="requiredFeatures" value="true" />
+      <option name="allFeatures" value="false" />
+      <option name="emulateTerminal" value="false" />
+      <option name="withSudo" value="false" />
+      <option name="backtrace" value="SHORT" />
+      <envs>
+        <env name="RUST_LOG" value="debug" />
+      </envs>
+      <option name="isRedirectInput" value="false" />
+      <option name="redirectInputPath" value="" />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Test node_tests::tests" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="command" value="test --package adakairust --lib node::node_tests::tests" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
       <option name="channel" value="DEFAULT" />
       <option name="requiredFeatures" value="true" />
@@ -163,26 +186,8 @@
         <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Test topology::topology_tests::tests::basic_parse_json" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
-      <option name="command" value="test --package adakairust --lib topology::topology_tests::tests::basic_parse_json -- --exact" />
-      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
-      <option name="channel" value="DEFAULT" />
-      <option name="requiredFeatures" value="true" />
-      <option name="allFeatures" value="false" />
-      <option name="emulateTerminal" value="false" />
-      <option name="withSudo" value="false" />
-      <option name="backtrace" value="SHORT" />
-      <envs>
-        <env name="RUST_LOG" value="debug" />
-      </envs>
-      <option name="isRedirectInput" value="false" />
-      <option name="redirectInputPath" value="" />
-      <method v="2">
-        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="Test wget::wget_tests::tests::basic" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
-      <option name="command" value="test --package adakairust --lib wget::wget_tests::tests::basic -- --exact" />
+    <configuration name="Test topology_tests::tests" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="command" value="test --package adakairust --lib topology::topology_tests::tests" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
       <option name="channel" value="DEFAULT" />
       <option name="requiredFeatures" value="true" />
@@ -225,19 +230,19 @@
     <list>
       <item itemvalue="Cargo.Doc" />
       <item itemvalue="Cargo.All Tests" />
-      <item itemvalue="Cargo.Test ping::ping_tests::tests::test_ping_node_bad_0" />
       <item itemvalue="Cargo.Test ping_tests::tests" />
-      <item itemvalue="Cargo.Test topology::topology_tests::tests::basic_parse_json" />
-      <item itemvalue="Cargo.Test wget::wget_tests::tests::basic" />
+      <item itemvalue="Cargo.Test node_tests::tests" />
+      <item itemvalue="Cargo.Test topology_tests::tests" />
+      <item itemvalue="Cargo.Test ping::ping_tests::tests::test_ping_node_bad_0" />
       <item itemvalue="Cargo.Test topology::topology_tests::tests::basic_all_peers" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Cargo.Test topology::topology_tests::tests::basic_all_peers" />
-        <item itemvalue="Cargo.Test topology::topology_tests::tests::basic_parse_json" />
-        <item itemvalue="Cargo.Test wget::wget_tests::tests::basic" />
-        <item itemvalue="Cargo.Test ping::ping_tests::tests::test_ping_node_bad_0" />
+        <item itemvalue="Cargo.Test topology_tests::tests" />
         <item itemvalue="Cargo.Test ping_tests::tests" />
+        <item itemvalue="Cargo.Test node_tests::tests" />
+        <item itemvalue="Cargo.Test ping::ping_tests::tests::test_ping_node_bad_0" />
       </list>
     </recent_temporary>
   </component>
@@ -252,7 +257,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1635350317203</updated>
-      <workItem from="1635350318580" duration="77901000" />
+      <workItem from="1635350318580" duration="98487000" />
     </task>
     <servers />
   </component>

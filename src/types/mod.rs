@@ -12,7 +12,7 @@ pub const MAINNET_MAGIC: u32 = 764824073;
 pub const TESTNET_MAGIC: u32 = 1097911063;
 
 /// NetworkType holds the two different cardano networks supported
-#[derive(Clone, Copy,Serialize, Deserialize, Debug)]
+#[derive(Clone, Copy,Serialize, Deserialize, Debug,Eq, Ord, PartialEq, PartialOrd)]
 pub enum NetworkType {
     /// Mainnet for cardano
     Mainnet,
@@ -22,7 +22,7 @@ pub enum NetworkType {
 }
 
 /// NodeType holds the two different cardano node types used in a cardano staking pool
-#[derive(Clone, Copy,Serialize, Deserialize, Debug)]
+#[derive(Clone, Copy,Serialize, Deserialize, Debug,Eq, Ord, PartialEq, PartialOrd)]
 pub enum NodeType {
     /// Relay node
     Relay,

@@ -38,6 +38,7 @@ pub mod topology;
 
 /// wget modules holds methods for downloading configuration related files for a cardano node
 pub mod wget;
+mod test;
 
 
 #[cfg(test)]
