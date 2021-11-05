@@ -74,7 +74,7 @@ mod tests {
 
         match top_result {
             Ok(mut topology) => {
-                topology.resolve_valencies();
+                //topology.resolve_valencies();
                 topology.ping();
                 topology.sort();
                 topology.pretty_print();
@@ -92,7 +92,7 @@ mod tests {
 
         match top_result {
             Ok(mut topology) => {
-                topology.resolve_valencies();
+                //topology.resolve_valencies();
                 topology.ping();
                 topology.sort();
                 topology.pretty_print();
@@ -102,5 +102,32 @@ mod tests {
             }
         }
     }
+    #[test]
+    fn basic_all_testnet_peers_valencies() {
+        test_initialize();
+        let top_result: TopologyResult<Topology> = Topology::new_from_online_peers(NetworkType::TestNet);
 
+        match top_result {
+            Ok(mut topology) => {
+                topology.resolve_valencies();
+
+                for node in topology.producers.iter() {
+                    let val = node.valency();
+                    assert!(val >0);
+
+                    if node.addr() == "relays-new.cardano-testnet.iohkdev.io" {
+                        assert_eq!(8,val)
+                    }
+
+                }
+                topology.pretty_print();
+            }
+            Err(_) => {
+                panic!("test failed")
+            }
+        }
+
+
+
+    }
 }

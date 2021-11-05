@@ -4,6 +4,8 @@ use std::sync::mpsc::{channel, Sender};
 use std::thread::JoinHandle;
 use std::time::Duration;
 
+use dns_lookup::lookup_host;
+
 use crate::ping::{MessageIn, MessageOut, ping};
 
 /// Pinger holds the internal functionality used for pinging multiple nodes concurrently
@@ -11,7 +13,7 @@ use crate::ping::{MessageIn, MessageOut, ping};
 pub(crate) struct Pinger {
     fan_in: Option<Sender<MessageOut>>,
     fan_out: Vec<Sender<MessageIn>>,
-    cpus: usize,
+    worker_threads: usize,
     next_cpu: usize,
     msg_vec: Arc<Mutex<Vec<MessageOut>>>,
     size: usize,
@@ -29,14 +31,14 @@ impl Pinger {
         let mut p: Pinger = Pinger {
             fan_in: Option::None,
             fan_out: Vec::new(),
-            cpus: num_cpus::get(),
+            worker_threads: num_cpus::get(),
             next_cpu : 0,
             msg_vec: Arc::new(Mutex::new(Vec::new())),
             size,
         };
 
-        if p.cpus > 1 {
-            p.cpus = p.cpus * 2
+        if p.worker_threads > 1 {
+            p.worker_threads = p.worker_threads * 4
         }
         return p;
     }
@@ -57,14 +59,14 @@ impl Pinger {
     }
 
     /// cpus: return the number of cpus that will be used
-    pub fn cpus(&mut self) -> usize {
-        return self.cpus;
+    pub fn worker_threads(&mut self) -> usize {
+        return self.worker_threads;
     }
 
-    /// next_cpu: used as an iterator for distributing work among all available cpus
-    pub fn next_cpu(&mut self) -> usize {
+    /// next_cpu: used as an iterator for distributing work among all available workers
+    pub fn next_worker(&mut self) -> usize {
         self.next_cpu += 1;
-        if self.next_cpu == self.cpus {
+        if self.next_cpu == self.worker_threads {
             self.next_cpu = 0
         }
         self.next_cpu
@@ -79,7 +81,7 @@ impl Pinger {
 
         let mut out: Vec<JoinHandle<()>> = Vec::new();
 
-        for i in 0..self.cpus {
+        for i in 0..self.worker_threads {
             let (tx,out_i) = self.go_worker(self.fan_in.clone(), i);
             self.fan_out.push(tx);
             out.push(out_i);
@@ -151,8 +153,18 @@ impl Pinger {
                         break;
                     }
                     MessageIn::Node { name,port,network_magic, id} => {
-                        debug!("msg: NODE: {} --> worker: {} - {} ",i, name, port);
-                        let (conn_duration, total_duration, is_error, error) = ping(name, port, network_magic); //fixme
+                        // debug!("msg: NODE: {} --> worker: {} - {} ",i, name, port);
+
+                        let name_a = name.clone();
+
+                        debug!("ping a: {}", name);
+                        let (conn_duration, total_duration, is_error, error) = ping(name_a, port, network_magic); //fixme
+                        debug!("ping b: {}", name);
+
+                        let name_copy = name.clone();
+
+                        let valency = valency(name_copy);
+
                         output.send(MessageOut::Latency {
                             conn_latency: conn_duration,
                             total_latency: total_duration,
@@ -160,24 +172,48 @@ impl Pinger {
                             online: !is_error,
                             is_error,
                             error,
+                            valency,
                         }).unwrap();
                     }
                 },
                 Err(e) => {
                     error!("err: {:?} --> worker: {:?}", e, i);
-                    /*output.send(MessageOut::Latency {
+
+                    output.send(MessageOut::Latency {
                         conn_latency: Duration::from_secs(120),
                         total_latency: Duration::from_secs(120),
-                        id,
+                        id: 0,
                         is_error: true,
                         online: false,
-                        error: "".to_string()
-                    }).unwrap();*/
-                    return;
+                        error: "405".to_string(),
+                        valency: 0
+                    }).unwrap();
+                    break;
                 }
             }
         });
-        //rx.recv_timeout(Duration::from_millis(5000))
         return (tx.clone(),_guard);
     }
+}
+
+fn valency(hostname: String) -> u16 {
+    let mut valency_count = 0;
+
+    if ipaddress::IPAddress::is_valid(hostname.to_string()) {
+        return 1;
+    }
+
+    let ips_result = lookup_host(&*hostname);
+    match ips_result {
+        Ok(resolved_addresses) => {
+            for _ in resolved_addresses {
+                valency_count += 1;
+            }
+        }
+        Err(_) => {
+            valency_count = 0
+        }
+    }
+    return valency_count;
+
 }

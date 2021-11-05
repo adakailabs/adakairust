@@ -104,7 +104,7 @@ mod tests {
         let mut pinger = Pinger::new(num_cpus::get());
         let (_, _) = pinger.run();
 
-        for i in 0..pinger.cpus() {
+        for i in 0..pinger.worker_threads() {
             pinger.fan_out()[i]
                 .send(MessageIn::Node {
                     name: "adakai".to_string(),
@@ -115,7 +115,7 @@ mod tests {
                 .unwrap();
         }
 
-        for i in 0..pinger.cpus() {
+        for i in 0..pinger.worker_threads() {
             pinger.fan_out()[i].send(MessageIn::Quit).unwrap();
         }
 

@@ -214,8 +214,7 @@ impl Node {
         let ips_result = lookup_host(hostname);
         match ips_result {
             Ok(resolved_addresses) => {
-                for addr in resolved_addresses {
-                    debug!("found address: {}", addr);
+                for _ in resolved_addresses {
                     valency_count += 1;
                 }
             }

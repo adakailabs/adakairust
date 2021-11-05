@@ -2,6 +2,7 @@
 
 extern crate pretty_env_logger;
 
+
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -65,7 +66,13 @@ pub enum MessageOut {
         is_error: bool,
 
         /// error is the description of the error detected
-        error: String},
+        error: String,
+
+        /// valency:  node valency
+        valency: u16,
+
+    },
+
 }
 
 // pub(crate) type PingResult<T> = Result<T, Box<dyn Error>>;
@@ -131,11 +138,8 @@ pub fn ping(host: String, port: u16, net_type: NetworkType) -> (Duration, Durati
     match net_type {
         NetworkType::TestNet => {
             network_magic = TESTNET_MAGIC;
-            debug!("network type: testnet")
         }
-        NetworkType::Mainnet => {
-            debug!("network type: mainnet")
-        }
+        NetworkType::Mainnet => {}
     }
     let future_ping = call_ping(host.to_string(), port, network_magic);
     block_on(future_ping)
@@ -150,10 +154,7 @@ pub fn ping_vec(mut in_node_vec: Vec<Node>,net_type: NetworkType) -> Vec<Node> {
     let (a, _) = pinger.run();
 
     for (id, node) in in_node_vec.iter().enumerate() {
-
-        debug!("node to ping: {} --> {}:{}",id, node.addr().to_string(),node.port());
-
-        let cpu = pinger.next_cpu();
+        let cpu = pinger.next_worker();
         pinger.fan_out()[cpu]
             .send(MessageIn::Node {
                 name: node.addr().to_string(),
@@ -173,13 +174,16 @@ pub fn ping_vec(mut in_node_vec: Vec<Node>,net_type: NetworkType) -> Vec<Node> {
 
     for msg in msg_vec.iter() {
         match msg {
-            MessageOut::Latency { conn_latency, total_latency, online, id,is_error, error  } => {
+            MessageOut::Latency { conn_latency, total_latency, online, id,is_error, error, valency  } => {
+                if *is_error && (*error == "405".to_string()) {
+                    continue
+                }
                 let n_id = id.clone();
                 in_node_vec[n_id].set_total_latency(total_latency.clone());
                 in_node_vec[n_id].set_con_latency(conn_latency.clone());
                 in_node_vec[n_id].set_online(online.clone());
                 in_node_vec[n_id].set_online_error(error.clone());
-                //in_node_vec[n_id].resolve_valency();
+                in_node_vec[n_id].set_valency(valency.clone());
 
                 if !online {
                     assert_ne!("", error);
@@ -192,8 +196,18 @@ pub fn ping_vec(mut in_node_vec: Vec<Node>,net_type: NetworkType) -> Vec<Node> {
 
     debug!("joing done, continuing");
 
-    for i in 0..pinger.cpus() {
-        pinger.fan_out()[i].send(MessageIn::Quit).unwrap();
+    for i in 0..pinger.worker_threads() {
+        let quit_msg = pinger.fan_out()[i].send(MessageIn::Quit);
+
+        match quit_msg {
+            Ok(_) => {
+                debug!("finalized worker: {}", i)
+            }
+            Err(e) => {
+                debug!("could not finalize worker: {} --> {}", i, e.to_string())
+            }
+        }
+
     }
 
     debug!("all done");
